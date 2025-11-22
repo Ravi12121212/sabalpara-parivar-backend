@@ -14,7 +14,7 @@ async function bootstrap() {
   const allowedOrigins = [
     'http://localhost:5173',      // add your frontend origin(s)
     'http://93.127.166.200',      // add server IP if frontends served from same IP
-    'http://https://sabalpara-parivar.vercel.app'
+    'https://sabalpara-parivar.vercel.app'
   ];
 
   app.enableCors({
