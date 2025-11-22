@@ -1,0 +1,11 @@
+{
+  "watch": ["src", "scripts", ".env"],
+  "ext": "ts,js,json",
+  "ignore": ["dist", "node_modules"],
+  "exec": "nest start",
+  "env": {
+  "PORT": "3000",
+  "MONGO_URI": "mongodb+srv://ravisabalpara4_db_user:zq1ypWgaMUOk5m0t@sabalparaparivar.gklhowx.mongodb.net/sabalparaparivar"
+  },
+  "delay": "200"
+}
