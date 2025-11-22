@@ -13,19 +13,28 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   // Replace the simple enableCors call with a safe, origin-checked version
   const allowedOrigins = [
-    'https://sabalpara-parivar.vercel.app/',   // replace with your frontend origin
-    'https://93.127.166.200'      // if you serve frontend from this IP over HTTPS
+    'https://sabalpara-parivar.vercel.app',   // remove trailing slash
+    'https://93.127.166.200',                 // IP over HTTPS
+    'http://localhost:4200',                  // dev frontend
+    'http://localhost:3000'                   // local testing
   ];
 
   app.enableCors({
     origin: (origin, callback) => {
       // allow requests with no origin (curl, mobile apps, same-origin)
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
+      if (!origin) {
+        console.log('[CORS] no origin (server or CLI request) — allowed');
+        return callback(null, true);
+      }
+      if (allowedOrigins.includes(origin)) {
+        console.log(`[CORS] allowed origin: ${origin}`);
+        return callback(null, true);
+      }
+      console.warn(`[CORS] blocked origin: ${origin}`);
       return callback(new Error('CORS not allowed by server'), false);
     },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: 'Content-Type, Authorization, Accept',
+    allowedHeaders: 'Content-Type, Authorization, Accept, X-Requested-With',
     credentials: true
   });
   app.use('/public', express.static(join(process.cwd(), 'public')));
@@ -43,6 +52,13 @@ async function bootstrap() {
     console.warn(`Base port ${basePort} busy; selected free port ${freePort}`);
   }
   await app.listen(freePort, '0.0.0.0');
+
+  // ensure Node HTTP server sockets time out after 5 minutes (300000 ms)
+  const server = app.getHttpServer() as any;
+  if (server && typeof server.setTimeout === 'function') {
+    server.setTimeout(300_000); // 5 minutes
+  }
+
   console.log(`API listening on http://localhost:${freePort}/api`);
 }
 bootstrap();
