@@ -13,7 +13,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   const allowedOrigins = [
     'http://localhost:5173',      // add your frontend origin(s)
-    'http://93.127.166.200',      // add server IP if frontends served from same IP
+    'https://93.127.166.200',      // add server IP if frontends served from same IP
     'https://sabalpara-parivar.vercel.app'
   ];
 
