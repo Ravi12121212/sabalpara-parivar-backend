@@ -11,7 +11,23 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-  app.enableCors({ origin: '*', credentials: true });
+  // Replace the simple enableCors call with a safe, origin-checked version
+  const allowedOrigins = [
+    'https://sabalpara-parivar.vercel.app/',   // replace with your frontend origin
+    'https://93.127.166.200'      // if you serve frontend from this IP over HTTPS
+  ];
+
+  app.enableCors({
+    origin: (origin, callback) => {
+      // allow requests with no origin (curl, mobile apps, same-origin)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error('CORS not allowed by server'), false);
+    },
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type, Authorization, Accept',
+    credentials: true
+  });
   app.use('/public', express.static(join(process.cwd(), 'public')));
   const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/auth_app_dev';
   console.log(`[Config] Mongo URI: ${mongoUri}`);
@@ -54,4 +70,3 @@ function findFreePort(start: number, attempts: number): Promise<number | null> {
   });
 }
 
- 
