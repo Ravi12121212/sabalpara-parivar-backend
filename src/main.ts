@@ -18,9 +18,7 @@ async function bootstrap() {
   const basePort = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
   const maxAttempts = 20;
   const freePort = await findFreePort(basePort, maxAttempts);
-  app.use('/', (req: express.Request, res: express.Response) => {
-    res.json({ message: 'Welcome to the Sabalpara Parivar Backend API!' });
-  });
+ 
   if (freePort === null) {
     console.error(`No free port found in range ${basePort}..${basePort + maxAttempts}`);
     process.exit(1);
@@ -55,3 +53,5 @@ function findFreePort(start: number, attempts: number): Promise<number | null> {
     tryNext(attempts);
   });
 }
+
+ 
