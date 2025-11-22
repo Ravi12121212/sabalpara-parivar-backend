@@ -28,7 +28,7 @@ async function bootstrap() {
   if (freePort !== basePort) {
     console.warn(`Base port ${basePort} busy; selected free port ${freePort}`);
   }
-  await app.listen(freePort);
+  await app.listen(freePort, '0.0.0.0');
   console.log(`API listening on http://localhost:${freePort}/api`);
 }
 bootstrap();
