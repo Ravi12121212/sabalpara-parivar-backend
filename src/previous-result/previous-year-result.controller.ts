@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { PreviousYearResultService } from './previous-year-result.service';
 import { CreatePreviousYearResultDto } from './dto/create-previous-year-result.dto';
 
@@ -17,5 +17,11 @@ export class PreviousYearResultController {
   async list() {
     const results = await this.service.list();
     return { results };
+  }
+
+  @Delete(':id')
+  async remove(@Param('id') id: string) {
+    const ok = await this.service.remove(id);
+    return { ok };
   }
 }

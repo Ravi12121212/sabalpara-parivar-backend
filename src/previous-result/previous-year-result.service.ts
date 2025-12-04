@@ -14,7 +14,12 @@ export class PreviousYearResultService {
     return doc;
   }
 
-  async list(limit = 100) {
+  async list(limit = 1000) {
     return this.model.find().sort({ createdAt: -1 }).limit(limit);
+  }
+
+  async remove(id: string) {
+    const res = await this.model.deleteOne({ _id: id });
+    return res.deletedCount === 1;
   }
 }
