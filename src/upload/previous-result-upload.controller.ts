@@ -25,7 +25,12 @@ const storage = diskStorage({
 @Controller('previous-result-upload')
 export class PreviousResultUploadController {
   @Post()
-  @UseInterceptors(FileInterceptor('file', { storage, limits: { fileSize: 5 * 1024 * 1024 } }))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage,
+      limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB
+    })
+  )
   upload(@UploadedFile() file: Express.Multer.File) {
     if (!file) return { error: 'No file uploaded' };
     // Accept pdf or image
