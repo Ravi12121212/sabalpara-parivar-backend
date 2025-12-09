@@ -6,13 +6,14 @@ import { ValidationPipe } from "@nestjs/common";
 import { join } from "path";
 import * as express from "express";
 import * as bodyParser from "body-parser";
+import * as net from "net";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Fix 413 Request Entity Too Large
-  app.use(bodyParser.json({ limit: "10mb" }));
-  app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
+  app.use(bodyParser.json({ limit: "50mb" }));
+  app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
   app.setGlobalPrefix("api");
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
