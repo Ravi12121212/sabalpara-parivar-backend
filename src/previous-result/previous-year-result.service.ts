@@ -22,4 +22,13 @@ export class PreviousYearResultService {
     const res = await this.model.deleteOne({ _id: id });
     return res.deletedCount === 1;
   }
+
+  async setImageUrl(id: string, url: string | undefined) {
+    if (!url) return null;
+    return this.model.findByIdAndUpdate(
+      { _id: id },
+      { $set: { resultFileUrl: url } },
+      { new: true }
+    );
+  }
 }
