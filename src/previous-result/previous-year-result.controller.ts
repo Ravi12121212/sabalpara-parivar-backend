@@ -19,6 +19,12 @@ export class PreviousYearResultController {
     return { results };
   }
 
+  @Get('/hello')
+  async lists() {
+    const results = await this.service.list();
+    return { results };
+  }
+
   @Delete(':id')
   async remove(@Param('id') id: string) {
     const ok = await this.service.remove(id);
