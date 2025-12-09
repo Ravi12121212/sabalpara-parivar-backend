@@ -11,7 +11,8 @@ import * as net from "net";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Fix 413 Request Entity Too Large
+  // Fix 413 Request Entity Too Large (increase payload limits)
+  // Note: File uploads (multipart/form-data) are handled by Multer; ensure Multer fileSize limit matches if uploading large files.
   app.use(bodyParser.json({ limit: "50mb" }));
   app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
