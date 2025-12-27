@@ -41,8 +41,6 @@ export class UserService {
         memberName: m.memberName,
         age: m.age,
         std: m.std,
-        resultImage: m.resultImage,
-        percentage: m.percentage,
         createdAt: (m as any).createdAt,
       })),
     };
@@ -87,8 +85,6 @@ export class UserService {
           memberName: m.memberName,
           age: m.age,
           std: m.std,
-          resultImage: m.resultImage,
-          percentage: m.percentage,
           createdAt: (m as any).createdAt,
         })),
       };

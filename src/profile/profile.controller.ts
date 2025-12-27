@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Param } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { UpsertProfileDto } from './dto/upsert-profile.dto';
 import { JwtAuthGuard } from '../auth/jwt.guard';
@@ -23,5 +23,17 @@ export class ProfileController {
   @Get('villages')
   listVillages() {
     return this.profile.listVillages();
+  }
+
+  // List unique business names
+  @Get('businesses')
+  listBusinesses() {
+    return this.profile.listBusinesses();
+  }
+
+  // List users for a specific business name
+  @Get('businesses/:name')
+  listUsersForBusiness(@Param('name') name: string) {
+    return this.profile.listUsersForBusiness(name);
   }
 }

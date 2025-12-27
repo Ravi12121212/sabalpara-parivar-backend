@@ -6,6 +6,10 @@ class CommitteeMember {
   memberName!: string;
   @Prop({ required: true })
   post!: string; // position
+  @Prop()
+  imageUrl?: string;
+  @Prop()
+  contactNumber?: string;
   @Prop({ default: Date.now })
   addedAt!: Date;
 }

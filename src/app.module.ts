@@ -7,10 +7,11 @@ import { CollectionsInitService } from './common/collections-init.service';
 import { UploadModule } from './upload/upload.module';
 import { CommitteeModule } from './committee/committee.module';
 import { PreviousYearResultModule } from './previous-result/previous-year-result.module';
+import { GalleryModule } from './gallery/gallery.module';
 import { MongooseDatabaseModule } from './database/mongoose.module';
 
 @Module({
-  imports: [MongooseDatabaseModule, AuthModule, ProfileModule, UserModule, HealthModule, UploadModule, CommitteeModule, PreviousYearResultModule],
+  imports: [MongooseDatabaseModule, AuthModule, ProfileModule, UserModule, HealthModule, UploadModule, CommitteeModule, PreviousYearResultModule, GalleryModule],
   providers: [CollectionsInitService],
 })
 export class AppModule {}

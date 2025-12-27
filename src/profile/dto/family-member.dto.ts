@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsInt, Min, IsNumber, Max, IsIn } from 'class-validator';
+import { IsString, IsOptional, IsInt, Min, IsIn } from 'class-validator';
 
 export class FamilyMemberDto {
   @IsString()
@@ -12,16 +12,6 @@ export class FamilyMemberDto {
   @IsOptional()
   @IsString()
   std?: string;
-
-  @IsOptional()
-  @IsString()
-  resultImage?: string; // URL
-
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  @Max(100)
-  percentage?: number;
 
   @IsOptional()
   @IsIn(['study', 'business', 'none'])

@@ -15,12 +15,7 @@ export class FamilyMember extends Document {
 
   @Prop()
   std?: string;
-
-  @Prop()
-  resultImage?: string;
-
-  @Prop()
-  percentage?: number;
+  
 
   // 'study' | 'business' | 'none'
   @Prop({ enum: ['study', 'business', 'none'], default: 'study' })

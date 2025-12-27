@@ -1,61 +1,81 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
-import { Committee } from '../schemas/committee.schema';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { Committee } from "../schemas/committee.schema";
 
-interface MemberInput { memberName: string; post: string; }
+export interface CreateCommitteeDto {
+  name: string;
+}
+export interface AddMemberDto {
+  memberName: string;
+  post: string;
+  imageUrl?: string;
+  contactNumber?: string;
+}
+export interface UpdateMemberDto {
+  memberName: string;
+  post: string;
+  imageUrl?: string;
+  contactNumber?: string;
+}
 
 @Injectable()
 export class CommitteeService {
-  constructor(@InjectModel(Committee.name) private committeeModel: Model<Committee>) {}
+  constructor(
+    @InjectModel(Committee.name) private committeeModel: Model<Committee>
+  ) {}
 
-  async create(name: string, members: MemberInput[]) {
-    const doc = await this.committeeModel.create({ name, members });
-    return this.map(doc);
+  async list(): Promise<any[]> {
+    return this.committeeModel.find().exec();
   }
 
-  async list() {
-    const docs = await this.committeeModel.find();
-    return docs.map(d => this.map(d));
+  async create(dto: CreateCommitteeDto): Promise<any> {
+    const existing = await this.committeeModel.findOne({ name: dto.name });
+    if (existing) throw new ConflictException("Committee already exists");
+    return this.committeeModel.create({ name: dto.name, members: [] });
   }
 
-  async addMember(id: string, member: MemberInput) {
-    const doc = await this.committeeModel.findByIdAndUpdate(id, { $push: { members: member } }, { new: true });
-    if (!doc) throw new NotFoundException('Committee not found');
-    return this.map(doc);
+  async addMember(id: string, dto: AddMemberDto): Promise<any> {
+    const committee = await this.committeeModel.findById(id);
+    if (!committee) throw new NotFoundException("Committee not found");
+    committee.members.push({
+      memberName: dto.memberName,
+      post: dto.post,
+      imageUrl: dto.imageUrl,
+      contactNumber: dto.contactNumber,
+    } as any);
+    await committee.save();
+    return committee.toObject();
   }
 
-  async updateMember(id: string, memberIndex: number, member: MemberInput) {
-    const doc = await this.committeeModel.findById(id);
-    if (!doc) throw new NotFoundException('Committee not found');
-    if (memberIndex < 0 || memberIndex >= doc.members.length) throw new NotFoundException('Member not found');
-    (doc.members as any)[memberIndex].memberName = member.memberName;
-    (doc.members as any)[memberIndex].post = member.post;
-    await doc.save();
-    return this.map(doc);
+  async updateMember(
+    id: string,
+    index: number,
+    dto: UpdateMemberDto
+  ): Promise<any> {
+    const committee = await this.committeeModel.findById(id);
+    if (!committee) throw new NotFoundException("Committee not found");
+    if (index < 0 || index >= committee.members.length)
+      throw new NotFoundException("Member not found");
+    committee.members[index].memberName = dto.memberName;
+    committee.members[index].post = dto.post;
+    committee.members[index].imageUrl = dto.imageUrl;
+    committee.members[index].contactNumber = dto.contactNumber;
+    await committee.save();
+    return committee.toObject();
   }
 
-  async removeMember(id: string, memberIndex: number) {
-    const doc = await this.committeeModel.findById(id);
-    if (!doc) throw new NotFoundException('Committee not found');
-    if (memberIndex < 0 || memberIndex >= doc.members.length) throw new NotFoundException('Member not found');
-    (doc.members as any).splice(memberIndex, 1);
-    await doc.save();
-    return this.map(doc);
-  }
-
-  async delete(id: string) {
-    const res = await this.committeeModel.findByIdAndDelete(id);
-    if (!res) throw new NotFoundException('Committee not found');
-    return { success: true };
-  }
-
-  private map(doc: Committee) {
-    return {
-      id: (doc._id as Types.ObjectId).toString(),
-      name: doc.name,
-      createdAt: (doc as any).createdAt,
-      members: (doc.members || []).map(m => ({ memberName: (m as any).memberName, post: (m as any).post, addedAt: (m as any).addedAt })),
-    };
+  async removeMember(id: string, index: number): Promise<any> {
+    const committee = await this.committeeModel.findById(id);
+    if (!committee) throw new NotFoundException("Committee not found");
+    if (index < 0 || index >= committee.members.length)
+      throw new NotFoundException("Member not found");
+    committee.members.splice(index, 1);
+    await committee.save();
+    return committee.toObject();
   }
 }

@@ -12,19 +12,6 @@ function ensureDir(dir: string) {
 
 const storage = diskStorage({
   destination: (req, file, cb) => {
-    const dest = join(process.cwd(), 'public', 'result');
-    ensureDir(dest);
-    cb(null, dest);
-  },
-  filename: (req, file, cb) => {
-    const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, unique + extname(file.originalname));
-  },
-});
-
-// Storage for committee member photos
-const memberStorage = diskStorage({
-  destination: (req, file, cb) => {
     const dest = join(process.cwd(), 'public', 'committee-members');
     ensureDir(dest);
     cb(null, dest);
@@ -35,41 +22,22 @@ const memberStorage = diskStorage({
   },
 });
 
-@Controller('upload')
-export class UploadController {
+@Controller('committee-member-upload')
+export class CommitteeMemberUploadController {
   @Post()
-  @UseInterceptors(FileInterceptor('file', { storage }))
-  upload(@UploadedFile() file: Express.Multer.File) {
-    if (!file) return { error: 'No file uploaded' };
-    const publicUrl = `/public/result/${file.filename}`;
-    return {
-      filename: file.filename,
-      mimetype: file.mimetype,
-      size: file.size,
-      url: publicUrl,
-    };
-  }
-
-  // Redundant route to ensure /api/committee-member-upload is available
-  @Post('committee-member-upload')
   @UseInterceptors(
     FileInterceptor('file', {
-      storage: memberStorage,
+      storage,
       limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
     })
   )
-  uploadCommitteeMember(@UploadedFile() file: Express.Multer.File) {
+  upload(@UploadedFile() file: Express.Multer.File) {
     if (!file) return { error: 'No file uploaded' };
     const allowed = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
     if (!allowed.includes(file.mimetype)) {
       return { error: 'Only JPG/PNG/WEBP images allowed' };
     }
     const publicUrl = `/public/committee-members/${file.filename}`;
-    return {
-      filename: file.filename,
-      mimetype: file.mimetype,
-      size: file.size,
-      url: publicUrl,
-    };
+    return { filename: file.filename, mimetype: file.mimetype, size: file.size, url: publicUrl };
   }
 }

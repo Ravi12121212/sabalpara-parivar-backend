@@ -6,7 +6,8 @@ import { CommitteeController } from './committee.controller';
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: Committee.name, schema: CommitteeSchema }])],
-  providers: [CommitteeService],
   controllers: [CommitteeController],
+  providers: [CommitteeService],
+  exports: [CommitteeService],
 })
 export class CommitteeModule {}

@@ -18,10 +18,6 @@ export class AuthController {
   login(@Body() dto: LoginDto) {
     return this.auth.login(dto);
   }
-  @Post('login1')
-  login1(@Body() dto: LoginDto) {
-    return this.auth.login(dto);
-  }
 
   @Post('forgot-password')
   forgotPassword(@Body('identifier') identifier: string) {
