@@ -23,7 +23,10 @@ export class ProfileService {
       this.profileModel.findOne({ userId: new Types.ObjectId(userId) }),
       this.familyModel.find({ userId: new Types.ObjectId(userId) }),
     ]);
-    return { profile, familyMembers: members };
+    // also include basic user record (email/phone) to allow frontend to show contact details
+    const user = await this.userModel.findById(new Types.ObjectId(userId), { email: 1, phone: 1 });
+    const userData = user ? { email: (user as any).email || null, phone: (user as any).phone || null } : { email: null, phone: null };
+    return { profile, familyMembers: members, user: userData };
   }
 
   async upsert(userId: string, dto: UpsertProfileDto) {
