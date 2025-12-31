@@ -11,8 +11,8 @@ export class ProfileService {
   constructor(
     @InjectModel(UserProfile.name) private profileModel: Model<UserProfile>,
     @InjectModel(FamilyMember.name) private familyModel: Model<FamilyMember>,
-  @InjectModel(User.name) private userModel: Model<User>,
-  ) {}
+    @InjectModel(User.name) private userModel: Model<User>,
+  ) { }
 
   async getProfile(userId: string) {
     return this.profileModel.findOne({ userId: new Types.ObjectId(userId) });
@@ -34,7 +34,7 @@ export class ProfileService {
     const update: any = {
       village: dto.village,
       name: dto.name,
-  age: dto.age,
+      age: dto.age,
       cityName: dto.cityName,
       businessType: dto.businessType,
       currentAddress: dto.currentAddress,
@@ -108,9 +108,8 @@ export class ProfileService {
 
   // For a given business name, list users involved (profile or family member), without making them clickable
   async listUsersForBusiness(name: string) {
-    const term = (name || '').trim();
-    if (!term) return { business: name, users: [] };
-    const rx = new RegExp('^' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$', 'i');
+    if (!name) return { business: name, users: [] };
+    const rx = new RegExp('^' + name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$', 'i');
     // Find matching profiles and families
     const [profiles, families] = await Promise.all([
       this.profileModel.find({ businessDetails: rx }),
@@ -120,11 +119,11 @@ export class ProfileService {
     profiles.forEach(p => userIds.add((p as any).userId.toString()));
     families.forEach(f => userIds.add((f as any).userId.toString()));
     if (userIds.size === 0) return { business: name, users: [] };
-  const ids = Array.from(userIds);
-  const idsObj = ids.map((s) => new Types.ObjectId(s));
-  const users = await this.userModel.find({ _id: { $in: idsObj } }, { email: 1, phone: 1, createdAt: 1 });
-  // decorate with basic profile info
-  const profs = await this.profileModel.find({ userId: { $in: idsObj } }, { name: 1, village: 1, userId: 1 });
+    const ids = Array.from(userIds);
+    const idsObj = ids.map((s) => new Types.ObjectId(s));
+    const users = await this.userModel.find({ _id: { $in: idsObj } }, { email: 1, phone: 1, createdAt: 1 });
+    // decorate with basic profile info
+    const profs = await this.profileModel.find({ userId: { $in: idsObj } }, { name: 1, village: 1, userId: 1 });
     const profMap = new Map(profs.map(p => [p.userId.toString(), p] as const));
     const list = users.map((u: any) => {
       const id = (u as any)._id.toString();
