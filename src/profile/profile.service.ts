@@ -115,29 +115,66 @@ export class ProfileService {
       this.profileModel.find({ businessDetails: rx }),
       this.familyModel.find({ businessName: rx }),
     ]);
+    // If no matches at all, return early
     const userIds = new Set<string>();
-    profiles.forEach(p => userIds.add((p as any).userId.toString()));
-    families.forEach(f => userIds.add((f as any).userId.toString()));
+    profiles.forEach((p: any) => userIds.add((p as any).userId.toString()));
+    families.forEach((f: any) => userIds.add((f as any).userId.toString()));
     if (userIds.size === 0) return { business: name, users: [] };
+
     const ids = Array.from(userIds);
     const idsObj = ids.map((s) => new Types.ObjectId(s));
-    const users = await this.userModel.find({ _id: { $in: idsObj } }, { email: 1, phone: 1, createdAt: 1 });
-    // decorate with basic profile info
-    const profs = await this.profileModel.find({ userId: { $in: idsObj } }, { name: 1, village: 1, userId: 1 });
-    const profMap = new Map(profs.map(p => [p.userId.toString(), p] as const));
-    const list = users.map((u: any) => {
-      const id = (u as any)._id.toString();
-      const p = profMap.get(id) as any;
-      // Fallbacks: derive a display name from email/phone when profile missing
-      const derivedName = p?.name || (u.email ? String(u.email).split('@')[0] : null) || (u.phone || null);
+
+    // Fetch users and profiles for the affected user ids
+    const [users, profs] = await Promise.all([
+      this.userModel.find({ _id: { $in: idsObj } }, { email: 1, phone: 1, createdAt: 1 }),
+      this.profileModel.find({ userId: { $in: idsObj } }, { name: 1, village: 1, userId: 1 }),
+    ]);
+    const userMap = new Map(users.map((u: any) => [(u as any)._id.toString(), u] as const));
+    const profMap = new Map(profs.map((p: any) => [p.userId.toString(), p] as const));
+
+    // Build result list. For matching family members, return member-level entries.
+    // Skip adding a user-level entry when that user has one or more matching family members.
+    const memberEntries = families.map((fm: any) => {
+      const userId = (fm.userId || fm.user)?.toString();
+      const user = userMap.get(userId) as any;
+      const profile = profMap.get(userId) as any;
       return {
-        id,
-        name: derivedName || null,
-        village: p?.village || null,
-        email: u.email || null,
-        phone: u.phone || null,
+        id: (fm as any)._id.toString(),
+        userId,
+        isMember: true,
+        name: fm.memberName || null,
+        village: profile?.village || null,
+        email: user?.email || null,
+        phone: user?.phone || null,
+        relation: fm.relation || null,
+        age: fm.age ?? null,
+        businessName: fm.businessName || null,
+        businessWorkType: fm.businessWorkType || null,
       };
     });
+
+    // Determine which userIds already have member entries
+    const usersWithMember = new Set(families.map((f: any) => (f.userId || f.user).toString()));
+
+    // Add profile-based entries only for users without matching family members
+    const profileEntries = profiles
+      .filter((p: any) => !usersWithMember.has(p.userId.toString()))
+      .map((p: any) => {
+        const uid = p.userId.toString();
+        const user = userMap.get(uid) as any;
+        const derivedName = p?.name || (user?.email ? String(user.email).split('@')[0] : null) || (user?.phone || null);
+        return {
+          id: uid,
+          userId: uid,
+          isMember: false,
+          name: derivedName || null,
+          village: p?.village || null,
+          email: user?.email || null,
+          phone: user?.phone || null,
+        };
+      });
+
+    const list = [...memberEntries, ...profileEntries];
     return { business: name, users: list };
   }
 }

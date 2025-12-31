@@ -6,8 +6,8 @@ export class GalleryItem extends Document {
   @Prop({ required: true })
   imageUrl!: string;
 
-  @Prop()
-  title?: string;
+  @Prop({ required: true })
+  title!: string;
 
   @Prop()
   createdAt!: Date;
