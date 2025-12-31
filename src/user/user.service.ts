@@ -11,10 +11,10 @@ export class UserService {
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(UserProfile.name) private profileModel: Model<UserProfile>,
     @InjectModel(FamilyMember.name) private familyModel: Model<FamilyMember>,
-  ) {}
+  ) { }
 
   async findById(id: string) {
-  const user = await this.userModel.findById(id);
+    const user = await this.userModel.findById(id);
     if (!user) throw new NotFoundException('User not found');
     return user;
   }
@@ -22,13 +22,15 @@ export class UserService {
   async findByIdWithProfile(id: string) {
     const user = await this.userModel.findById(id);
     if (!user) throw new NotFoundException('User not found');
-  const profile = await this.profileModel.findOne({ userId: user._id });
-  const familyMembers = await this.familyModel.find({ userId: user._id });
+    const profile = await this.profileModel.findOne({ userId: user._id });
+    const familyMembers = await this.familyModel.find({ userId: user._id });
     return {
       id: (user as any)._id.toString(),
       email: user.email,
       phone: user.phone,
       createdAt: (user as any).createdAt,
+      age : (profile as any)?.age || null,
+      businessType : (profile as any)?.businessType || null,
       profile: profile ? {
         village: profile.village,
         name: profile.name,
@@ -42,6 +44,12 @@ export class UserService {
         age: m.age,
         std: m.std,
         createdAt: (m as any).createdAt,
+        activityType: m.activityType,
+        businessName: m.businessName,
+        businessWorkType: m.businessWorkType,
+        businessDescription: m.businessDescription, relation: m.relation,
+        memberPhone: m.memberPhone,
+
       })),
     };
   }
@@ -49,10 +57,10 @@ export class UserService {
   async listUsersByVillage(village: string) {
     const trimmed = village.trim();
     if (!trimmed) return [];
-  const profiles = await this.profileModel.find({ village: trimmed });
-  const profileMap = new Map<string, UserProfile>();
-  profiles.forEach(p => profileMap.set(p.userId.toString(), p));
-  const userIds = profiles.map(p => p.userId);
+    const profiles = await this.profileModel.find({ village: trimmed });
+    const profileMap = new Map<string, UserProfile>();
+    profiles.forEach(p => profileMap.set(p.userId.toString(), p));
+    const userIds = profiles.map(p => p.userId);
     if (userIds.length === 0) return [];
     const [users, families] = await Promise.all([
       this.userModel.find({ _id: { $in: userIds } }, { email: 1, phone: 1, createdAt: 1 }),
