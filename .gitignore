@@ -37,6 +37,14 @@ coverage/
 public/result/*
 public/24-25-result/*
 
+# Other public image folders
+public/committee-members/*
+public/gallery/*
+public/notifications/*
+
 # Keep placeholder files
 !public/result/.gitkeep
 !public/24-25-result/.gitkeep
+!public/committee-members/.gitkeep
+!public/gallery/.gitkeep
+!public/notifications/.gitkeep
