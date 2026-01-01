@@ -15,13 +15,13 @@ export class UserService {
 
   async findById(id: string) {
     const user = await this.userModel.findById(id);
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException('વપરાશકર્તા મળ્યો નથી');
     return user;
   }
 
   async findByIdWithProfile(id: string) {
     const user = await this.userModel.findById(id);
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException('વપરાશકર્તા મળ્યો નથી');
     const profile = await this.profileModel.findOne({ userId: user._id });
     const familyMembers = await this.familyModel.find({ userId: user._id });
     return {
@@ -101,7 +101,7 @@ export class UserService {
 
   async promoteToAdmin(id: string) {
     const user = await this.userModel.findById(id);
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException('વપરાશકર્તા મળ્યો નથી');
     (user as any).role = 'admin';
     await user.save();
     return { id: (user as any)._id.toString(), role: (user as any).role };

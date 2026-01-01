@@ -14,11 +14,11 @@ export class FamilyMemberDto {
   std?: string;
 
   @IsOptional()
-  @IsIn(['study', 'business', 'none'])
+  @IsIn(['અભ્યાસ', 'વ્યવસાય', 'કોઈનહીં'])
   activityType?: string;
 
   @IsOptional()
-  @IsIn(['personal', 'job', 'none'])
+  @IsIn(['વ્યક્તિગત', 'નોકરી', 'કોઈનહીં'])
   businessWorkType?: string;
 
   @IsOptional()
@@ -34,10 +34,10 @@ export class FamilyMemberDto {
   memberPhone?: string;
 
   @IsOptional()
-  @IsIn(['father','son','daughter','mother','wife','brother','other'])
+  @IsIn( ['પિતા','માતા','પત્ની','પુત્ર','પુત્રી','ભાઈ','અન્ય'])
   relation?: string;
 
   @IsOptional()
-  @IsIn(['house_wife','retired','child'])
+  @IsIn(['ગૃહિણી','નિવૃત્ત','બાળક'])
   noneCategory?: string;
 }

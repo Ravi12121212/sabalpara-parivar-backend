@@ -17,30 +17,30 @@ export class FamilyMember extends Document {
   std?: string;
   
 
-  // 'study' | 'business' | 'none'
-  @Prop({ enum: ['study', 'business', 'none'], default: 'study' })
+  // 'અભ્યાસ' | 'વ્યવસાય' | 'none'
+  @Prop({ enum: ['અભ્યાસ', 'વ્યવસાય', 'કોઈનહીં'], default: 'અભ્યાસ' })
   activityType?: string;
 
-  // Only if activityType === 'business' (or 'none' for house roles)
-  @Prop({ enum: ['personal', 'job', 'none'], required: false })
-  businessWorkType?: string; // personal vs job vs none
+  // Only if activityType === 'વ્યવસાય' (or 'none' for house roles)
+  @Prop({ enum: ['વ્યક્તિગત', 'નોકરી', 'કોઈનહીં'], required: false })
+  businessWorkType?: string; // વ્યક્તિગત vs નોકરી vs કોઈનહીં
 
   @Prop()
-  businessName?: string; // Name of business or employer
+  businessName?: string; // Name of વ્યવસાય or employer
 
   @Prop()
-  businessDescription?: string; // What is the business / role
+  businessDescription?: string; // What is the વ્યવસાય / role
 
   // Member phone (optional)
   @Prop()
   memberPhone?: string;
 
   // Relation to user (father, son, daughter, mother, wife, brother, other)
-  @Prop({ enum: ['father','son','daughter','mother','wife','brother','other'], required: false })
+  @Prop({ enum: ['પિતા','માતા','પત્ની','પુત્ર','પુત્રી','ભાઈ','અન્ય'], required: false })
   relation?: string;
 
-  // If businessWorkType === 'none' describe category: house_wife | retired | child
-  @Prop({ enum: ['house_wife','retired','child'], required: false })
+  // If businessWorkType === 'none' describe category: ગૃહિણી | નિવૃત્ત | બાળક
+  @Prop({ enum: ['ગૃહિણી','નિવૃત્ત','બાળક'], required: false })
   noneCategory?: string;
 
   createdAt!: Date;

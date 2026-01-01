@@ -31,7 +31,7 @@ export class UserProfile extends Document {
   @Prop()
   cityName?: string; // City of residence
 
-  @Prop({ enum: ['personal','job','none'], required: false })
+  @Prop({ enum: ['વ્યક્તિગત','નોકરી','કોઈનહીં'], required: false })
   businessType?: string; // Main user business type
 
   createdAt!: Date;

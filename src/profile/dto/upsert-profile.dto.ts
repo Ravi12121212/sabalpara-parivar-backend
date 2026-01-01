@@ -39,7 +39,7 @@ export class UpsertProfileDto {
 
   @IsOptional()
   @IsString()
-  businessType?: string; // personal | job | none
+  businessType?: string; // વ્યક્તિગત | નોકરી | કોઈનહીં
 
   @ValidateNested({ each: true })
   @Type(() => FamilyMemberDto)
