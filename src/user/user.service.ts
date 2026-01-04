@@ -54,10 +54,9 @@ export class UserService {
     };
   }
 
-  async listUsersByVillage(village: string) {
-    const trimmed = village.trim();
-    if (!trimmed) return [];
-    const profiles = await this.profileModel.find({ village: trimmed });
+  async listUsersByVillage(village: string) { 
+    if (!village) return [];
+    const profiles = await this.profileModel.find({ village: village });
     const profileMap = new Map<string, UserProfile>();
     profiles.forEach(p => profileMap.set(p.userId.toString(), p));
     const userIds = profiles.map(p => p.userId);
